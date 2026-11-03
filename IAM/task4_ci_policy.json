@@ -1,0 +1,79 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ECRAuthToken",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ECRPushRepo",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:PutImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload"
+      ],
+      "Resource": "arn:aws:ecr:us-east-1:000000000000:repository/production-app-repo"
+    },
+    {
+      "Sid": "ECSTaskDef",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:RegisterTaskDefinition",
+        "ecs:DescribeTaskDefinition"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ECSUpdateService",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:UpdateService",
+        "ecs:DescribeServices"
+      ],
+      "Resource": "arn:aws:ecs:us-east-1:000000000000:service/production-cluster/production-service"
+    },
+    {
+      "Sid": "PassRoleToECS",
+      "Effect": "Allow",
+      "Action": [
+        "iam:PassRole"
+      ],
+      "Resource": [
+        "arn:aws:iam::000000000000:role/ecsTaskExecutionRole",
+        "arn:aws:iam::000000000000:role/ecsAppTaskRole"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "ecs.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "S3ListBucket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::production-ci-build-artifacts-000000000000"
+    },
+    {
+      "Sid": "S3GetObjects",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+      ],
+      "Resource": "arn:aws:s3:::production-ci-build-artifacts-000000000000/*"
+    }
+  ]
+}
